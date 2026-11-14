@@ -10,7 +10,7 @@ Enable the plugin on one host per app. Its saved preferences apply to chat links
 
 Open **Settings → Plugins → Link Pilot → Link behavior**, or find **Link Pilot settings** in Command Center. Preferences save automatically for the current host and apply on the next click. The interface, command labels and error messages follow Paseo’s language: Arabic, English, Spanish, French, Japanese, Korean, Brazilian Portuguese, Russian or Simplified Chinese.
 
-Requires the Paseo desktop app and daemon **0.13.x**. If the old local `in-app-links` prototype is enabled, disable it first. Browser web and mobile keep their normal link behavior.
+Requires the Paseo desktop app and daemon **0.15.4 through 0.15.x**. If the old local `in-app-links` prototype is enabled, disable it first. Browser web and mobile keep their normal link behavior.
 
 ## Link handling and data
 

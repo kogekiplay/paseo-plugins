@@ -51,3 +51,7 @@ Submitted image URLs:
 - Windows/Linux desktop operation, compact/mobile settings layout, and a physical Command-click after this configuration change have not been separately verified. Gesture behavior is covered by the integration fixtures; the earlier local in-app opening fix was confirmed by the user before this release preparation.
 
 Listing updates require a new pinned commit and registry review. Uploading the source PR does not update the published listing.
+
+## Compatibility update
+
+The `codex/link-pilot` source branch now carries package version `0.1.1`, uses the Paseo 0.15.4 SDK, and declares `>=0.15.4 <0.16.0`. On 2026-11-14 it passed typecheck, lint, 48 integration tests, the installed 0.15.4 bundle probe, package dry run, and a local daemon install and reload. The marketplace record remains pinned to the original 0.13.x artifact until a new review is submitted.

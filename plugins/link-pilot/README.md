@@ -15,7 +15,7 @@ Enable Link Pilot on one host per app. That installation’s preferences apply t
 
 ## Install
 
-Requires the Paseo **desktop app and daemon 0.13.x**. The app's internal browser adapter is checked at runtime; unsupported app internals leave native link handling active.
+Requires the Paseo **desktop app and daemon 0.15.4 through 0.15.x**. The app's internal browser adapter is checked at runtime; unsupported app internals leave native link handling active.
 
 ```sh
 paseo plugin add git:xzthemeofsss/paseo-plugins:plugins/link-pilot --ref codex/link-pilot
@@ -51,6 +51,6 @@ npm pack --dry-run --ignore-scripts
 
 The focused integration suite reads the installed macOS Paseo app's real Markdown link renderer and pure routing/file-classification modules. Set `PASEO_BUNDLE` to a packaged desktop entry JavaScript file on another machine. Browser stores and navigation are controlled test fixtures. Tests do not contact a daemon or open real external websites.
 
-Tested against macOS Paseo 0.13.0: source-pane navigation, both destinations for both gestures, Windows/Linux modifier policy in fixtures, settings read errors, disposal, and changed source context. Windows/Linux desktop operation and native devices have not been independently exercised.
+Tested against macOS Paseo 0.15.4: source-pane navigation, both destinations for both gestures, Windows/Linux modifier policy in fixtures, settings read errors, disposal, and changed source context. Windows/Linux desktop operation and native devices have not been independently exercised.
 
 See [the listing overview](OVERVIEW.md) and [marketplace submission](MARKETPLACE.md). The listing title, description and overview use English in every locale; settings, commands and errors follow Paseo’s language.
