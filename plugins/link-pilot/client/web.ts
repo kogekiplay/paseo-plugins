@@ -95,10 +95,10 @@ function clickedLink(event: MouseEvent): ChatLink | null {
   )
     return null;
   const raw = anchor.getAttribute("href") ?? "";
-  if (!/^https?:\/\//i.test(raw)) return null;
   try {
     const url = new URL(raw);
-    if (!url.hostname || !["http:", "https:"].includes(url.protocol)) return null;
+    if (url.protocol !== "file:" && (!url.hostname || !["http:", "https:"].includes(url.protocol)))
+      return null;
     const tabs = Array.from(
       pane.querySelectorAll('[data-testid^="workspace-tab-agent_"][aria-selected="true"]'),
     ).filter(visible);

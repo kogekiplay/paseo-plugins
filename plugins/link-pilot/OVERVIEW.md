@@ -14,7 +14,7 @@ Requires the Paseo desktop app and daemon **0.15.4 through 0.15.x**. If the old 
 
 ## Link handling and data
 
-The plugin handles HTTP(S) links in visible assistant chat messages. File links, downloads, user messages, other modifiers and middle-click keep their normal behavior. In-app links open in the source pane, including split workspaces.
+The plugin handles HTTP(S) and local file links in visible assistant chat messages. File links can open in the system browser on Command-click; downloads, user messages, other modifiers and middle-click keep their normal behavior. In-app links open in the source pane, including split workspaces.
 
 It reads the clicked link and label, workspace and pane context, host preferences, and Paseo's own same-origin application bundle. Source-pane placement depends on private Paseo interfaces, which are checked at runtime and may require updates after a Paseo release. If the adapter is unavailable, normal link handling stays active.
 

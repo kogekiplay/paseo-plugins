@@ -59,6 +59,13 @@ const external = z.object({
   kind: z.literal("resolved"),
   value: z.object({ kind: z.literal("external"), url: nonempty }),
 });
+const file = z.object({
+  kind: z.literal("resolved"),
+  value: z.object({
+    kind: z.literal("file"),
+    target: z.object({ raw: nonempty, path: nonempty }),
+  }),
+});
 
 export const signatures = {
   browser: ["createWorkspaceBrowser", "getBrowserRecord", "useBrowserStore"],
@@ -165,17 +172,21 @@ export function createHost(requireModule: (id: number) => unknown, ids: ModuleId
         const active = selected.tabs.find((tab) => tab.tabId === selected.focusedTabId)?.target;
         if (active?.kind !== "agent" || !("agentId" in active) || active.agentId !== link.agentId)
           return null;
-        const classification = external.safeParse(
-          files.classifyForResolution(
-            { href: link.url, text: link.text, ...(link.unwrap ? { markup: "linkify" } : {}) },
-            { workspaceRoot: workspaceRecord.workspaceDirectory },
-          ),
+        const resolution = files.classifyForResolution(
+          { href: link.url, text: link.text, ...(link.unwrap ? { markup: "linkify" } : {}) },
+          { workspaceRoot: workspaceRecord.workspaceDirectory },
         );
-        if (
-          !classification.success ||
-          new URL(classification.data.value.url).href !== new URL(link.url).href
-        )
-          return null;
+        const classification = external.safeParse(resolution);
+        if (classification.success) {
+          if (new URL(classification.data.value.url).href !== new URL(link.url).href) return null;
+        } else {
+          const fileClassification = file.safeParse(resolution);
+          if (
+            !fileClassification.success ||
+            new URL(fileClassification.data.value.target.raw).href !== new URL(link.url).href
+          )
+            return null;
+        }
         return intentSchema.parse({
           url: link.url,
           serverId: current.serverId,

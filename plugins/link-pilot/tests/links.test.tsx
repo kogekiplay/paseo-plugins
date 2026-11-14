@@ -305,7 +305,6 @@ for (const options of [
   { href: "/workspace/path" },
   { href: "../docs" },
   { href: "#heading" },
-  { href: "file:///tmp/test.ts" },
   { href: "mailto:hello@example.com" },
   { href: "paseo://open/test" },
   { href: "https://example.com", download: true },
@@ -445,6 +444,26 @@ test("Command-click defaults to the system browser", async () => {
   await click({ metaKey: true });
   assert.deepEqual(openedExternal, ["https://example.com/docs"]);
   assert.equal(app.records.size, 0);
+  assert.equal(externalCalls, 0);
+});
+test("Command-click opens a local file link in the system browser", async () => {
+  fixture({ href: "file:///tmp/bookmarks.html", text: "Download bookmarks" });
+  const app = runtime();
+  await start(app.host);
+  const event = await click({ metaKey: true });
+  assert.equal(event.defaultPrevented, true);
+  assert.deepEqual(openedExternal, ["file:///tmp/bookmarks.html"]);
+  assert.equal(app.records.size, 0);
+  assert.equal(externalCalls, 0);
+});
+test("ordinary file clicks can open in the Paseo browser", async () => {
+  fixture({ href: "file:///tmp/bookmarks.html", text: "Download bookmarks" });
+  const app = runtime();
+  await start(app.host);
+  const event = await click();
+  assert.equal(event.defaultPrevented, true);
+  assert.equal(openedExternal.length, 0);
+  assert.equal(app.records.size, 1);
   assert.equal(externalCalls, 0);
 });
 test("a settings change takes effect on the next click without reloading", async () => {
