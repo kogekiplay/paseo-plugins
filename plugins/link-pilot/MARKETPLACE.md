@@ -54,4 +54,4 @@ Listing updates require a new pinned commit and registry review. Uploading the s
 
 ## Compatibility update
 
-The `codex/link-pilot` source branch now carries package version `0.1.1`, uses the Paseo 0.15.4 SDK, and declares `>=0.15.4 <0.16.0`. On 2026-11-14 it passed typecheck, lint, 48 integration tests, the installed 0.15.4 bundle probe, package dry run, and a local daemon install and reload. The marketplace record remains pinned to the original 0.13.x artifact until a new review is submitted.
+The `codex/link-pilot` source branch now carries package version `0.1.1`, uses the Paseo 0.15.4 SDK, and declares `>=0.15.4 <0.16.0`. On 2026-11-14 it passed typecheck, lint, 49 integration tests, the installed 0.15.4 bundle probe, package dry run, and a local daemon install and reload. The marketplace record remains pinned to the original 0.13.x artifact until a new review is submitted.
