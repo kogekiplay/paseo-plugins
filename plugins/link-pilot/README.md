@@ -31,7 +31,7 @@ The runtime ID is `link-pilot`. This direct Git source contains the Paseo 0.15.4
 
 ## Scope and data
 
-HTTP(S) links and local file links written as `file://` URLs or absolute paths inside visible assistant chat messages are intercepted. In-app destinations open in the source chat's pane, even when another pane has focus. File links can therefore open in the system browser on Command-click, while downloads, user messages, Shift/Alt-click, middle-click and macOS Ctrl-click keep Paseo's normal behavior. Browser web and mobile retain native link handling; their settings page can still edit the host preferences.
+HTTP(S) links and local file links written as `file://` URLs or absolute paths inside visible assistant chat messages are handled. In-app web destinations open in the source chat's pane, even when another pane has focus. Local file links keep Paseo's native preview on ordinary click and open in the system browser on Command-click, while downloads, user messages, Shift/Alt-click, middle-click and macOS Ctrl-click keep Paseo's normal behavior. Browser web and mobile retain native link handling; their settings page can still edit the host preferences.
 
 The plugin reads the clicked URL and label, active workspace and pane context, saved preferences, and Paseo's own same-origin JavaScript bundle. It uses private app interfaces for source-pane placement and validates them before attaching the listener. A future Paseo update can require an adapter update.
 

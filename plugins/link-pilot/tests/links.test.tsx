@@ -456,15 +456,15 @@ test("Command-click opens a local file link in the system browser", async () => 
   assert.equal(app.records.size, 0);
   assert.equal(externalCalls, 0);
 });
-test("ordinary file clicks can open in the Paseo browser", async () => {
-  fixture({ href: "file:///tmp/bookmarks.html", text: "Download bookmarks" });
+test("ordinary file clicks retain Paseo's native preview", async () => {
+  fixture({ href: "/Users/kogeki/Downloads/bookmarks.html", text: "Download bookmarks" });
   const app = runtime();
   await start(app.host);
   const event = await click();
   assert.equal(event.defaultPrevented, true);
   assert.equal(openedExternal.length, 0);
-  assert.equal(app.records.size, 1);
-  assert.equal(externalCalls, 0);
+  assert.equal(app.records.size, 0);
+  assert.equal(externalCalls, 1);
 });
 test("a settings change takes effect on the next click without reloading", async () => {
   const app = runtime();

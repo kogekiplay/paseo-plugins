@@ -180,6 +180,9 @@ export function install(options: LinkControllerOptions) {
     const modified = host.modifierKey === "meta" ? event.metaKey : event.ctrlKey;
     const link = clickedLink(event);
     if (!link) return;
+    const localFile = link.url.startsWith("file:");
+    // Paseo's native handler owns ordinary local-file clicks and its file preview.
+    if (localFile && !modified) return;
     const pathname = location.pathname;
     const intent = host.prepare(link, pathname);
     if (!intent) return;
@@ -198,7 +201,9 @@ export function install(options: LinkControllerOptions) {
           current.workspaceKey !== intent.workspaceKey
         )
           throw new Error("Source chat changed while reading settings");
-        if (values[modified ? "modifiedClick" : "click"] === "external")
+        // A local file cannot render in Paseo's workspace browser. Command/Ctrl-click
+        // therefore always uses the system opener, including when the setting is stale.
+        if (localFile || values[modified ? "modifiedClick" : "click"] === "external")
           await options.openExternal(link.url);
         else openingHost.open(current);
         if (!lifetime.signal.aborted) clearAlert();
