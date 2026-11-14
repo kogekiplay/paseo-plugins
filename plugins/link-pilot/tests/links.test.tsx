@@ -39,6 +39,8 @@ let externalCalls = 0;
 let settings = valuesSchema.parse({});
 let settingsReader: () => Promise<LinkPreferences> = async () => settings;
 const openedExternal: string[] = [];
+const copiedFiles: string[] = [];
+const copiedAddresses: string[] = [];
 function controller(discover: (signal: AbortSignal) => Promise<BrowserHost>) {
   return install({
     isWeb: true,
@@ -47,10 +49,18 @@ function controller(discover: (signal: AbortSignal) => Promise<BrowserHost>) {
     openExternal: async (url) => {
       openedExternal.push(url);
     },
+    copyFile: async (url) => {
+      copiedFiles.push(url);
+    },
+    copyFileAddress: async (url) => {
+      copiedAddresses.push(url);
+    },
     errorText: () => ({
       failure: "Link opening failed",
       dismiss: "Dismiss",
       openFile: "Open in Finder",
+      copyFile: "Copy file",
+      copyAddress: "Copy file address",
     }),
   });
 }
@@ -273,8 +283,10 @@ async function contextMenu() {
   await new Promise((resolve) => setImmediate(resolve));
   return event;
 }
-async function chooseFileMenuItem() {
-  const target = document.querySelector('[role="menuitem"]')!;
+async function chooseFileMenuItem(label: string) {
+  const target = [...document.querySelectorAll('[role="menuitem"]')].find(
+    (element) => element.textContent === label,
+  )!;
   act(() => {
     target.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
   });
@@ -288,6 +300,8 @@ beforeEach(() => {
   settings = valuesSchema.parse({});
   settingsReader = async () => settings;
   openedExternal.length = 0;
+  copiedFiles.length = 0;
+  copiedAddresses.length = 0;
   diagnostics.length = 0;
   dom.window.history.replaceState({}, "", route);
   fixture();
@@ -502,7 +516,22 @@ test("right-click reveals an absolute local file in the system file manager", as
   assert.equal(event.defaultPrevented, true);
   assert.equal(openedExternal.length, 0);
   assert.equal(document.querySelector('[role="menu"]') !== null, true);
-  await chooseFileMenuItem();
+  const items = [...document.querySelectorAll('[role="menuitem"]')];
+  assert.deepEqual(
+    items.map((item) => item.textContent),
+    ["Copy file", "Copy file address", "Open in Finder"],
+  );
+  act(() => {
+    items[1].dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
+  });
+  assert.equal((items[1] as HTMLElement).style.background, "highlight");
+  await chooseFileMenuItem("Copy file");
+  assert.deepEqual(copiedFiles, ["file:///Users/kogeki/Downloads/bookmarks.html"]);
+  await contextMenu();
+  await chooseFileMenuItem("Copy file address");
+  assert.deepEqual(copiedAddresses, ["file:///Users/kogeki/Downloads/bookmarks.html"]);
+  await contextMenu();
+  await chooseFileMenuItem("Open in Finder");
   assert.deepEqual(openedExternal, ["file:///Users/kogeki/Downloads/bookmarks.html"]);
   assert.equal(app.records.size, 0);
   assert.equal(externalCalls, 0);
@@ -556,7 +585,15 @@ test("external opener rejection is visible without an in-app fallback", async ()
     openExternal: async () => {
       throw new Error("open denied");
     },
-    errorText: () => ({ failure: "Open failed", dismiss: "Dismiss", openFile: "Open in Finder" }),
+    copyFile: async () => {},
+    copyFileAddress: async () => {},
+    errorText: () => ({
+      failure: "Open failed",
+      dismiss: "Dismiss",
+      openFile: "Open in Finder",
+      copyFile: "Copy file",
+      copyAddress: "Copy file address",
+    }),
   });
   await Promise.resolve();
   await click({ metaKey: true });
@@ -571,7 +608,15 @@ test("native platform is a no-op without reading DOM or discovering host", () =>
     },
     readPreferences: async () => settings,
     openExternal: async () => {},
-    errorText: () => ({ failure: "", dismiss: "", openFile: "Open in Finder" }),
+    copyFile: async () => {},
+    copyFileAddress: async () => {},
+    errorText: () => ({
+      failure: "",
+      dismiss: "",
+      openFile: "Open in Finder",
+      copyFile: "Copy file",
+      copyAddress: "Copy file address",
+    }),
   });
   stop();
 });

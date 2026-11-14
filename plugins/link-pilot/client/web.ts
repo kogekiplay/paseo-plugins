@@ -36,7 +36,7 @@ interface AlertElement {
   textContent: string | null;
   style: Record<string, string>;
   setAttribute(name: string, value: string): void;
-  addEventListener(type: string, listener: () => void, options: { once: boolean }): void;
+  addEventListener(type: string, listener: () => void, options?: { once?: boolean }): void;
   append(child: AlertElement): void;
   remove(): void;
 }
@@ -142,7 +142,15 @@ interface LinkControllerOptions {
   isWeb: boolean;
   readPreferences(): Promise<LinkPreferences>;
   openExternal(url: string): Promise<void>;
-  errorText(): { failure: string; dismiss: string; openFile: string };
+  copyFile(url: string): Promise<void>;
+  copyFileAddress(url: string): Promise<void>;
+  errorText(): {
+    failure: string;
+    dismiss: string;
+    openFile: string;
+    copyFile: string;
+    copyAddress: string;
+  };
   discover?: (signal: AbortSignal) => Promise<BrowserHost>;
 }
 
@@ -201,36 +209,56 @@ export function install(options: LinkControllerOptions) {
       left: `${event.clientX}px`,
       top: `${event.clientY}px`,
       zIndex: "2147483647",
-      minWidth: "180px",
-      padding: "4px",
-      background: "Canvas",
-      color: "CanvasText",
+      minWidth: "220px",
+      padding: "5px",
+      background: "Menu",
+      color: "MenuText",
       border: "1px solid ButtonBorder",
-      borderRadius: "7px",
-      boxShadow: "0 4px 16px rgb(0 0 0 / 24%)",
+      borderRadius: "8px",
+      boxShadow: "0 8px 24px rgb(0 0 0 / 22%)",
+      fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif",
+      fontSize: "13px",
     });
-    const openButton = document.createElement("button");
-    openButton.setAttribute("role", "menuitem");
-    openButton.textContent = copy.openFile;
-    Object.assign(openButton.style, {
-      display: "block",
-      width: "100%",
-      padding: "8px 12px",
-      border: "0",
-      background: "transparent",
-      color: "inherit",
-      textAlign: "left",
-      cursor: "pointer",
-    });
-    openButton.addEventListener(
-      "click",
-      () => {
-        clearFileMenu();
-        void options.openExternal(url).catch(showError);
-      },
-      { once: true },
-    );
-    menu.append(openButton);
+    const addItem = (label: string, action: () => Promise<void>) => {
+      const button = document.createElement("button");
+      button.setAttribute("role", "menuitem");
+      button.textContent = label;
+      Object.assign(button.style, {
+        display: "block",
+        width: "100%",
+        minHeight: "28px",
+        padding: "5px 10px",
+        border: "0",
+        borderRadius: "5px",
+        background: "transparent",
+        color: "MenuText",
+        fontFamily: "inherit",
+        fontSize: "13px",
+        lineHeight: "18px",
+        textAlign: "left",
+        cursor: "default",
+      });
+      const setSelected = (selected: boolean) => {
+        button.style.background = selected ? "Highlight" : "transparent";
+        button.style.color = selected ? "HighlightText" : "MenuText";
+      };
+      button.addEventListener("mouseenter", () => setSelected(true));
+      button.addEventListener("mouseleave", () => setSelected(false));
+      button.addEventListener("focus", () => setSelected(true));
+      button.addEventListener("blur", () => setSelected(false));
+      button.addEventListener(
+        "click",
+        () => {
+          clearFileMenu();
+          void action().catch(showError);
+        },
+        { once: true },
+      );
+      menu.append(button);
+    };
+    addItem(copy.copyFile, () => options.copyFile(url));
+    addItem(copy.copyAddress, () => options.copyFileAddress(url));
+    addItem(copy.openFile, () => options.openExternal(url));
     document.body.append(menu);
     fileMenu = menu;
   }

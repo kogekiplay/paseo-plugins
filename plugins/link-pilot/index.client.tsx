@@ -4,7 +4,7 @@ import { Platform } from "react-native";
 import { messages } from "./client/messages";
 import { LinkSettings } from "./client/settings";
 import { install } from "./client/web";
-import { revealLocalFile } from "./shared/files";
+import { copyLocalFile, copyLocalFileAddress, revealLocalFile } from "./shared/files";
 import { preferences, valuesSchema } from "./shared/preferences";
 
 export default function contribute(client: PluginClientContext) {
@@ -22,10 +22,18 @@ export default function contribute(client: PluginClientContext) {
       }
       await openExternalUrl(url);
     },
+    async copyFile(url) {
+      await client.rpc(copyLocalFile, { url });
+    },
+    async copyFileAddress(url) {
+      await client.rpc(copyLocalFileAddress, { url });
+    },
     errorText: () => ({
       failure: client.i18n.t(messages, "failure"),
       dismiss: client.i18n.t(messages, "dismiss"),
       openFile: client.i18n.t(messages, "openFile"),
+      copyFile: client.i18n.t(messages, "copyFile"),
+      copyAddress: client.i18n.t(messages, "copyAddress"),
     }),
   });
   const removeSettings = client.addSettingsScreen({

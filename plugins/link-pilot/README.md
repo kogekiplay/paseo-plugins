@@ -31,11 +31,11 @@ The runtime ID is `link-pilot`. This direct Git source contains the Paseo 0.15.4
 
 ## Scope and data
 
-HTTP(S) links and local file links written as `file://` URLs or absolute paths inside visible assistant chat messages are handled. In-app web destinations open in the source chat's pane, even when another pane has focus. Local file links keep Paseo's native preview on ordinary click, and reveal the file in the platform file manager on Command-click or right-click. Downloads, user messages, Shift/Alt-click, middle-click and macOS Ctrl-click keep Paseo's normal behavior. Browser web and mobile retain native link handling; their settings page can still edit the host preferences.
+HTTP(S) links and local file links written as `file://` URLs or absolute paths inside visible assistant chat messages are handled. In-app web destinations open in the source chat's pane, even when another pane has focus. Local file links keep Paseo's native preview on ordinary click. Right-click opens a native-style menu with **Copy file**, **Copy file address**, and **Open in Finder**; Command-click also reveals the file in the platform file manager. Downloads, user messages, Shift/Alt-click, middle-click and macOS Ctrl-click keep Paseo's normal behavior. Browser web and mobile retain native link handling; their settings page can still edit the host preferences.
 
 The plugin reads the clicked URL and label, active workspace and pane context, saved preferences, and Paseo's own same-origin JavaScript bundle. It uses private app interfaces for source-pane placement and validates them before attaching the listener. A future Paseo update can require an adapter update.
 
-The plugin has no external backend or telemetry service. Preferences are stored by the Paseo daemon. Web links open through Paseo's browser or the system browser; local file Command-click and right-click invoke the daemon host's file manager, using Finder on macOS. The plugin does not send chat messages, call an AI provider, or install software at runtime. If settings cannot be read or opening fails after the click is intercepted, a dismissible error appears instead of trying another destination.
+The plugin has no external backend or telemetry service. Preferences are stored by the Paseo daemon. Web links open through Paseo's browser or the system browser. The local-file menu copies either a Finder file object or its absolute path, and opens the daemon host's file manager when requested. The plugin does not send chat messages, call an AI provider, or install software at runtime. If settings cannot be read or an action fails after interception, a dismissible error appears instead of trying another destination.
 
 ## Development and validation
 
