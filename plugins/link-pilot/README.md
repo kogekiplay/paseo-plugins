@@ -18,7 +18,7 @@ Enable Link Pilot on one host per app. That installation’s preferences apply t
 Requires the Paseo **desktop app and daemon 0.15.4 through 0.15.x**. The app's internal browser adapter is checked at runtime; unsupported app internals leave native link handling active.
 
 ```sh
-paseo plugin add git:xzthemeofsss/paseo-plugins:plugins/link-pilot --ref codex/link-pilot
+paseo plugin add git:kogekiplay/paseo-plugins:plugins/link-pilot --ref codex/link-pilot
 ```
 
 If upgrading from the earlier local prototype, disable it first:
@@ -27,7 +27,7 @@ If upgrading from the earlier local prototype, disable it first:
 paseo plugin disable in-app-links
 ```
 
-The runtime ID is `link-pilot`. This is a direct Git installation; the marketplace listing is being prepared.
+The runtime ID is `link-pilot`. This direct Git source contains the Paseo 0.15.4 compatibility update. The marketplace record remains pinned to the older 0.13.x artifact until a new review is submitted.
 
 ## Scope and data
 
