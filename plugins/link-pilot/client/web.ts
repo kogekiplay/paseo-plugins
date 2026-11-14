@@ -42,6 +42,8 @@ interface AlertElement {
 }
 interface MouseEvent {
   button: number;
+  clientX: number;
+  clientY: number;
   altKey: boolean;
   ctrlKey: boolean;
   metaKey: boolean;
@@ -140,7 +142,7 @@ interface LinkControllerOptions {
   isWeb: boolean;
   readPreferences(): Promise<LinkPreferences>;
   openExternal(url: string): Promise<void>;
-  errorText(): { failure: string; dismiss: string };
+  errorText(): { failure: string; dismiss: string; openFile: string };
   discover?: (signal: AbortSignal) => Promise<BrowserHost>;
 }
 
@@ -151,9 +153,14 @@ export function install(options: LinkControllerOptions) {
   const lifetime = new AbortController();
   let host: BrowserHost | null = null;
   let alert: AlertElement | null = null;
+  let fileMenu: AlertElement | null = null;
   function clearAlert() {
     alert?.remove();
     alert = null;
+  }
+  function clearFileMenu() {
+    fileMenu?.remove();
+    fileMenu = null;
   }
   function showError(error: unknown) {
     if (lifetime.signal.aborted) return;
@@ -183,6 +190,52 @@ export function install(options: LinkControllerOptions) {
     dismiss.addEventListener("click", clearAlert, { once: true });
     alert.append(dismiss);
     document.body.append(alert);
+  }
+  function showFileMenu(event: MouseEvent, url: string) {
+    clearFileMenu();
+    const copy = options.errorText();
+    const menu = document.createElement("div");
+    menu.setAttribute("role", "menu");
+    Object.assign(menu.style, {
+      position: "fixed",
+      left: `${event.clientX}px`,
+      top: `${event.clientY}px`,
+      zIndex: "2147483647",
+      minWidth: "180px",
+      padding: "4px",
+      background: "Canvas",
+      color: "CanvasText",
+      border: "1px solid ButtonBorder",
+      borderRadius: "7px",
+      boxShadow: "0 4px 16px rgb(0 0 0 / 24%)",
+    });
+    const openButton = document.createElement("button");
+    openButton.setAttribute("role", "menuitem");
+    openButton.textContent = copy.openFile;
+    Object.assign(openButton.style, {
+      display: "block",
+      width: "100%",
+      padding: "8px 12px",
+      border: "0",
+      background: "transparent",
+      color: "inherit",
+      textAlign: "left",
+      cursor: "pointer",
+    });
+    openButton.addEventListener(
+      "click",
+      () => {
+        clearFileMenu();
+        void options.openExternal(url).catch(showError);
+      },
+      { once: true },
+    );
+    menu.append(openButton);
+    document.body.append(menu);
+    fileMenu = menu;
+  }
+  function onDocumentClick() {
+    clearFileMenu();
   }
   function onClick(event: MouseEvent) {
     if (!host || event.defaultPrevented || event.button !== 0 || event.shiftKey || event.altKey)
@@ -231,19 +284,16 @@ export function install(options: LinkControllerOptions) {
     if (!intent) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    void options
-      .openExternal(link.url)
-      .then(() => {
-        if (!lifetime.signal.aborted) clearAlert();
-      })
-      .catch(showError);
+    showFileMenu(event, link.url);
   }
   function dispose() {
     lifetime.abort();
     document.removeEventListener("click", onClick, true);
+    document.removeEventListener("click", onDocumentClick, true);
     document.removeEventListener("contextmenu", onContextMenu, true);
     host = null;
     clearAlert();
+    clearFileMenu();
     if (Reflect.get(document, OWNER) === dispose) Reflect.deleteProperty(document, OWNER);
   }
   Reflect.set(document, OWNER, dispose);
@@ -251,6 +301,7 @@ export function install(options: LinkControllerOptions) {
     .then((ready) => {
       if (lifetime.signal.aborted) return;
       host = ready;
+      document.addEventListener("click", onDocumentClick, true);
       document.addEventListener("click", onClick, true);
       document.addEventListener("contextmenu", onContextMenu, true);
     })

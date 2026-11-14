@@ -47,7 +47,11 @@ function controller(discover: (signal: AbortSignal) => Promise<BrowserHost>) {
     openExternal: async (url) => {
       openedExternal.push(url);
     },
-    errorText: () => ({ failure: "Link opening failed", dismiss: "Dismiss" }),
+    errorText: () => ({
+      failure: "Link opening failed",
+      dismiss: "Dismiss",
+      openFile: "Open in Finder",
+    }),
   });
 }
 let dispose = () => {};
@@ -269,6 +273,13 @@ async function contextMenu() {
   await new Promise((resolve) => setImmediate(resolve));
   return event;
 }
+async function chooseFileMenuItem() {
+  const target = document.querySelector('[role="menuitem"]')!;
+  act(() => {
+    target.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+}
 beforeEach(() => {
   dispose();
   cleanup.forEach((fn) => fn());
@@ -489,6 +500,9 @@ test("right-click reveals an absolute local file in the system file manager", as
   await start(app.host);
   const event = await contextMenu();
   assert.equal(event.defaultPrevented, true);
+  assert.equal(openedExternal.length, 0);
+  assert.equal(document.querySelector('[role="menu"]') !== null, true);
+  await chooseFileMenuItem();
   assert.deepEqual(openedExternal, ["file:///Users/kogeki/Downloads/bookmarks.html"]);
   assert.equal(app.records.size, 0);
   assert.equal(externalCalls, 0);
@@ -542,7 +556,7 @@ test("external opener rejection is visible without an in-app fallback", async ()
     openExternal: async () => {
       throw new Error("open denied");
     },
-    errorText: () => ({ failure: "Open failed", dismiss: "Dismiss" }),
+    errorText: () => ({ failure: "Open failed", dismiss: "Dismiss", openFile: "Open in Finder" }),
   });
   await Promise.resolve();
   await click({ metaKey: true });
@@ -557,7 +571,7 @@ test("native platform is a no-op without reading DOM or discovering host", () =>
     },
     readPreferences: async () => settings,
     openExternal: async () => {},
-    errorText: () => ({ failure: "", dismiss: "" }),
+    errorText: () => ({ failure: "", dismiss: "", openFile: "Open in Finder" }),
   });
   stop();
 });

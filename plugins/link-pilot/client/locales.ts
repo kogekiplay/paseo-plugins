@@ -10,6 +10,7 @@ const en = {
   loading: "Loading settings…",
   unavailable: "Settings unavailable",
   unsaved: "Settings were not saved",
+  openFile: "Open in Finder",
   failure:
     "Could not open this link. Check the source chat and Link Pilot settings, then try again.",
   dismiss: "Dismiss",
@@ -30,6 +31,7 @@ export const resources = {
     loading: "جارٍ تحميل الإعدادات…",
     unavailable: "الإعدادات غير متاحة",
     unsaved: "لم تُحفظ الإعدادات",
+    openFile: "فتح في Finder",
     failure: "تعذّر فتح هذا الرابط. تحقّق من المحادثة الأصلية وإعدادات Link Pilot، ثم حاول مجددًا.",
     dismiss: "إغلاق",
   },
@@ -45,6 +47,7 @@ export const resources = {
     loading: "Cargando ajustes…",
     unavailable: "Ajustes no disponibles",
     unsaved: "No se han guardado los ajustes",
+    openFile: "Abrir en Finder",
     failure:
       "No se pudo abrir este enlace. Revisa la conversación de origen y los ajustes de Link Pilot e inténtalo de nuevo.",
     dismiss: "Cerrar",
@@ -61,6 +64,7 @@ export const resources = {
     loading: "Chargement des paramètres…",
     unavailable: "Paramètres indisponibles",
     unsaved: "Les paramètres n’ont pas été enregistrés",
+    openFile: "Ouvrir dans le Finder",
     failure:
       "Impossible d’ouvrir ce lien. Vérifiez la conversation d’origine et les paramètres de Link Pilot, puis réessayez.",
     dismiss: "Fermer",
@@ -77,6 +81,7 @@ export const resources = {
     loading: "設定を読み込み中…",
     unavailable: "設定を利用できません",
     unsaved: "設定を保存できませんでした",
+    openFile: "Finderで開く",
     failure:
       "リンクを開けませんでした。元のチャットと Link Pilot の設定を確認して、もう一度お試しください。",
     dismiss: "閉じる",
@@ -93,6 +98,7 @@ export const resources = {
     loading: "설정 불러오는 중…",
     unavailable: "설정을 사용할 수 없습니다",
     unsaved: "설정을 저장하지 못했습니다",
+    openFile: "Finder에서 열기",
     failure: "이 링크를 열 수 없습니다. 원래 채팅과 Link Pilot 설정을 확인한 후 다시 시도하세요.",
     dismiss: "닫기",
   },
@@ -108,6 +114,7 @@ export const resources = {
     loading: "Carregando configurações…",
     unavailable: "Configurações indisponíveis",
     unsaved: "As configurações não foram salvas",
+    openFile: "Abrir no Finder",
     failure:
       "Não foi possível abrir este link. Verifique a conversa de origem e as configurações do Link Pilot e tente novamente.",
     dismiss: "Fechar",
@@ -124,6 +131,7 @@ export const resources = {
     loading: "Загрузка настроек…",
     unavailable: "Настройки недоступны",
     unsaved: "Не удалось сохранить настройки",
+    openFile: "Открыть в Finder",
     failure:
       "Не удалось открыть ссылку. Проверьте исходный чат и настройки Link Pilot, затем повторите попытку.",
     dismiss: "Закрыть",
@@ -140,6 +148,7 @@ export const resources = {
     loading: "正在读取设置…",
     unavailable: "设置不可用",
     unsaved: "设置尚未保存",
+    openFile: "用 Finder 打开",
     failure: "链接打开失败。请检查来源聊天和 Link Pilot 设置后重试。",
     dismiss: "关闭",
   },

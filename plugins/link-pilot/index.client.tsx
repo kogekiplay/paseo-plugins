@@ -25,6 +25,7 @@ export default function contribute(client: PluginClientContext) {
     errorText: () => ({
       failure: client.i18n.t(messages, "failure"),
       dismiss: client.i18n.t(messages, "dismiss"),
+      openFile: client.i18n.t(messages, "openFile"),
     }),
   });
   const removeSettings = client.addSettingsScreen({
