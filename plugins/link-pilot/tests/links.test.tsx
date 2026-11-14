@@ -447,12 +447,12 @@ test("Command-click defaults to the system browser", async () => {
   assert.equal(externalCalls, 0);
 });
 test("Command-click opens a local file link in the system browser", async () => {
-  fixture({ href: "file:///tmp/bookmarks.html", text: "Download bookmarks" });
+  fixture({ href: "/Users/kogeki/Downloads/bookmarks.html", text: "Download bookmarks" });
   const app = runtime();
   await start(app.host);
   const event = await click({ metaKey: true });
   assert.equal(event.defaultPrevented, true);
-  assert.deepEqual(openedExternal, ["file:///tmp/bookmarks.html"]);
+  assert.deepEqual(openedExternal, ["file:///Users/kogeki/Downloads/bookmarks.html"]);
   assert.equal(app.records.size, 0);
   assert.equal(externalCalls, 0);
 });

@@ -14,6 +14,7 @@ declare class URL {
   href: string;
   hostname: string;
   host: string;
+  pathname: string;
   protocol: string;
 }
 declare class Node {
@@ -64,6 +65,8 @@ const PANE = '[data-testid^="workspace-pane-"]';
 const CHAT = '[data-testid="agent-chat-scroll"]';
 const ASSISTANT = '[data-testid="assistant-message"]';
 const OWNER = Symbol.for("paseo.plugin.in-app-links.owner");
+const LOCAL_FILE_PATH =
+  /^\/(?:Users|Volumes|private|tmp|var|Applications|Library|System|opt|usr|home|mnt|srv)\//i;
 function visible(element: Element): boolean {
   return (
     element.isConnected &&
@@ -96,7 +99,8 @@ function clickedLink(event: MouseEvent): ChatLink | null {
     return null;
   const raw = anchor.getAttribute("href") ?? "";
   try {
-    const url = new URL(raw);
+    const url = LOCAL_FILE_PATH.test(raw) ? new URL("file:///") : new URL(raw);
+    if (LOCAL_FILE_PATH.test(raw)) url.pathname = raw;
     if (url.protocol !== "file:" && (!url.hostname || !["http:", "https:"].includes(url.protocol)))
       return null;
     const tabs = Array.from(
@@ -107,7 +111,7 @@ function clickedLink(event: MouseEvent): ChatLink | null {
     const agentId = tabs[0].getAttribute("data-testid")?.slice("workspace-tab-agent_".length);
     if (!paneId || !agentId) return null;
     return {
-      url: raw,
+      url: url.href,
       text: anchor.textContent ?? "",
       unwrap:
         anchor.getAttribute("data-paseo-markdown-unwrap") === "true" ||
