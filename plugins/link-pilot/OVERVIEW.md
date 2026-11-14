@@ -14,8 +14,8 @@ Requires the Paseo desktop app and daemon **0.15.4 through 0.15.x**. If the old 
 
 ## Link handling and data
 
-The plugin handles HTTP(S) links and local file links written as `file://` URLs or absolute paths in visible assistant chat messages. Local file links keep Paseo's native preview on ordinary click and open in the system browser on Command-click; downloads, user messages, other modifiers and middle-click keep their normal behavior. In-app web links open in the source pane, including split workspaces.
+The plugin handles HTTP(S) links and local file links written as `file://` URLs or absolute paths in visible assistant chat messages. Local file links keep Paseo's native preview on ordinary click and reveal the file in the platform file manager on Command-click or right-click; downloads, user messages, other modifiers and middle-click keep their normal behavior. In-app web links open in the source pane, including split workspaces.
 
 It reads the clicked link and label, workspace and pane context, host preferences, and Paseo's own same-origin application bundle. Source-pane placement depends on private Paseo interfaces, which are checked at runtime and may require updates after a Paseo release. If the adapter is unavailable, normal link handling stays active.
 
-Preferences are stored by the Paseo daemon. Opening a link contacts its destination through the chosen browser. The plugin adds no external backend or telemetry, sends no prompts or tool results to model providers, and installs no software while running. A settings or opening failure after interception shows an error without trying another destination.
+Preferences are stored by the Paseo daemon. Web links contact their destination through the chosen browser; local file Command-click and right-click invoke the daemon host's file manager. The plugin adds no external backend or telemetry, sends no prompts or tool results to model providers, and installs no software while running. A settings or opening failure after interception shows an error without trying another destination.

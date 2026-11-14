@@ -34,7 +34,7 @@ Submitted image URLs:
 - Runtime plugin ID: `link-pilot`; package version: `0.1.0`.
 - Requires app and daemon 0.13.x. The click interceptor runs only in the desktop app. The native settings contribution also works on browser web.
 - One active host installation per app. Its settings apply to chat links across connected hosts.
-- No preparation command, runtime npm dependencies, lifecycle scripts, downloads of software, or subprocess execution. Paseo provides the runtime libraries.
+- No preparation command, runtime npm dependencies, lifecycle scripts, or downloads of software. Local-file Command-click and right-click invoke the daemon host's platform file manager.
 - Host settings use `defineSettings` / `registerSettings` / `useSettings`. Clicks read the public settings RPC before choosing a destination.
 - External links use the public `openExternalUrl` API. Source-pane browser placement uses checked private app exports. The client fetches only its own same-origin app bundle to locate those exports; it does not evaluate the fetched text.
 - The plugin reads clicked URLs/labels and workspace/pane context. It sends no agent messages and adds no telemetry or external service. Chosen URLs are visited by the selected browser.

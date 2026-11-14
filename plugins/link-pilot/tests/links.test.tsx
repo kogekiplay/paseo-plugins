@@ -256,6 +256,19 @@ async function click(options: MouseEventInit = {}) {
   await new Promise((resolve) => setImmediate(resolve));
   return event;
 }
+async function contextMenu() {
+  const target = document.querySelector('a code, a [role="link"], a')!;
+  const event = new MouseEvent("contextmenu", {
+    bubbles: true,
+    cancelable: true,
+    button: 2,
+  });
+  act(() => {
+    target.dispatchEvent(event);
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  return event;
+}
 beforeEach(() => {
   dispose();
   cleanup.forEach((fn) => fn());
@@ -465,6 +478,20 @@ test("ordinary file clicks retain Paseo's native preview", async () => {
   assert.equal(openedExternal.length, 0);
   assert.equal(app.records.size, 0);
   assert.equal(externalCalls, 1);
+});
+test("right-click reveals an absolute local file in the system file manager", async () => {
+  fixture({
+    href: "/Users/kogeki/Downloads/bookmarks.html",
+    text: "Download bookmarks",
+    download: true,
+  });
+  const app = runtime();
+  await start(app.host);
+  const event = await contextMenu();
+  assert.equal(event.defaultPrevented, true);
+  assert.deepEqual(openedExternal, ["file:///Users/kogeki/Downloads/bookmarks.html"]);
+  assert.equal(app.records.size, 0);
+  assert.equal(externalCalls, 0);
 });
 test("a settings change takes effect on the next click without reloading", async () => {
   const app = runtime();

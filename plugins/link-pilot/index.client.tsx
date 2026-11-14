@@ -4,6 +4,7 @@ import { Platform } from "react-native";
 import { messages } from "./client/messages";
 import { LinkSettings } from "./client/settings";
 import { install } from "./client/web";
+import { revealLocalFile } from "./shared/files";
 import { preferences, valuesSchema } from "./shared/preferences";
 
 export default function contribute(client: PluginClientContext) {
@@ -14,7 +15,13 @@ export default function contribute(client: PluginClientContext) {
       if (result.status !== "ready") throw new Error(result.error);
       return valuesSchema.parse(result.values);
     },
-    openExternal: openExternalUrl,
+    async openExternal(url) {
+      if (url.startsWith("file:")) {
+        await client.rpc(revealLocalFile, { url });
+        return;
+      }
+      await openExternalUrl(url);
+    },
     errorText: () => ({
       failure: client.i18n.t(messages, "failure"),
       dismiss: client.i18n.t(messages, "dismiss"),

@@ -55,8 +55,16 @@ declare const document: {
   scripts: ArrayLike<{ src: string }>;
   body: { append(child: AlertElement): void };
   createElement(tag: "div" | "button"): AlertElement;
-  addEventListener(type: "click", listener: (event: MouseEvent) => void, capture: boolean): void;
-  removeEventListener(type: "click", listener: (event: MouseEvent) => void, capture: boolean): void;
+  addEventListener(
+    type: "click" | "contextmenu",
+    listener: (event: MouseEvent) => void,
+    capture: boolean,
+  ): void;
+  removeEventListener(
+    type: "click" | "contextmenu",
+    listener: (event: MouseEvent) => void,
+    capture: boolean,
+  ): void;
 };
 declare const location: { href: string; pathname: string };
 const callable = z.custom<(...args: unknown[]) => unknown>((value) => typeof value === "function");
@@ -74,7 +82,7 @@ function visible(element: Element): boolean {
     element.getClientRects().length > 0
   );
 }
-function clickedLink(event: MouseEvent): ChatLink | null {
+function clickedLink(event: MouseEvent, allowDownloads = false): ChatLink | null {
   const target =
     event.target instanceof Element
       ? event.target
@@ -82,7 +90,11 @@ function clickedLink(event: MouseEvent): ChatLink | null {
         ? event.target.parentElement
         : null;
   const anchor = target?.closest("a[href]");
-  if (!(anchor instanceof HTMLAnchorElement) || anchor.hasAttribute("download")) return null;
+  if (
+    !(anchor instanceof HTMLAnchorElement) ||
+    (!allowDownloads && anchor.hasAttribute("download"))
+  )
+    return null;
   const assistant = anchor.closest(ASSISTANT);
   const chat = anchor.closest(CHAT);
   const pane = anchor.closest(PANE);
@@ -210,9 +222,26 @@ export function install(options: LinkControllerOptions) {
       })
       .catch(showError);
   }
+  function onContextMenu(event: MouseEvent) {
+    if (!host || event.defaultPrevented || event.button !== 2) return;
+    const link = clickedLink(event, true);
+    if (!link?.url.startsWith("file:")) return;
+    const pathname = location.pathname;
+    const intent = host.prepare(link, pathname);
+    if (!intent) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    void options
+      .openExternal(link.url)
+      .then(() => {
+        if (!lifetime.signal.aborted) clearAlert();
+      })
+      .catch(showError);
+  }
   function dispose() {
     lifetime.abort();
     document.removeEventListener("click", onClick, true);
+    document.removeEventListener("contextmenu", onContextMenu, true);
     host = null;
     clearAlert();
     if (Reflect.get(document, OWNER) === dispose) Reflect.deleteProperty(document, OWNER);
@@ -223,6 +252,7 @@ export function install(options: LinkControllerOptions) {
       if (lifetime.signal.aborted) return;
       host = ready;
       document.addEventListener("click", onClick, true);
+      document.addEventListener("contextmenu", onContextMenu, true);
     })
     .catch((error: unknown) => {
       if (!lifetime.signal.aborted)
